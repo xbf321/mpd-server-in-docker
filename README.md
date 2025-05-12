@@ -1,20 +1,70 @@
-docker run \
-  -e PUID=1001 \
-  -e PGID=1002 \
-  -p 7170:6600/tcp \
-  -v /opt/x/web/english-mpd-server/playlists:/var/lib/mpd/playlist \
-  -v /opt/x/web/english-mpd-server/music:/var/lib/mpd/music \
+# MPD in docker
+
+A docker image for [Music Player Daemon](https://www.musicpd.org/) based on debian
+
+## How to use
+
+First, create **mpd-server** directory. In this directory, create **music** and **playlists** directory.
+
+```sh
+cd mpd-server
+mkdir music
+mkdir playlists
+```
+
+### Docker
+
+```
+docker run -d --name mpd-server \
+  -p 7160:6600/tcp \
+  --cap-add=sys_nice \
+  -v ./playlists:/var/lib/mpd/playlist:rw \
+  -v ./music:/var/lib/mpd/music:rw \
   --device /dev/snd \
   xbf321/mpd-server
+```
 
+### Docker Compose
+
+```
+services:
+  mpd-server:
+    image: xbf321/mpd-server
+    container_name: mpd-server
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Hong_Kong
+    volumes:
+      - ./playlists:/var/lib/mpd/playlist:rw
+      - ./music:/var/lib/mpd/music:rw
+    ports:
+      - 7160:6600
+    devices:
+      - /dev/snd:/dev/snd
+    cap_add:
+      - SYS_NICE
+```
+
+```sh
+# stop
+docker-compose down
+# repull
+docker-compose pull xbf321/home-print-web
+# start
+docker-compose up -d
+```
+
+## Other
+```sh
+#groupadd ${USER} \
+#useradd -G ${USER} -M ${USER} -d $HOME \
+#usermod $USER -s /bin/bash
+#USER $USER
+#groupadd -g ${PGID} ${USER}
+#useradd -g ${PGID} -u ${PUID} -G ${USER} -M ${USER} -d $HOME
+# chown -R $USER:$USER $HOME \
+#usermod mpd -s /bin/bash
+#CMD ["/usr/bin/mpd", "--no-daemon", "--stdout", "/etc/mpd.conf"]
 docker run -it --rm xbf321/mpd-server /bin/bash
-
-docker run --name mpd \
-  -e PUID=1001 \
-  -e PGID=1002 \
-  -p 7170:6600/tcp \
-  -v /Users/xingbaifang/Project/docker-test/playlists:/var/lib/mpd/playlist \
-  -v /Users/xingbaifang/Project/docker-test/music:/var/lib/mpd/music \
-  xbf321/mpd-server
-
-  docker exec -it mpd /bin/bash
+docker exec -it mpd-server /bin/bash
+```

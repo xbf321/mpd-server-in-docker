@@ -7,8 +7,9 @@ ENV \
 
 COPY ./start.sh .
 COPY ./mpd.conf /etc/mpd.conf.new
-COPY ./debian.sources /etc/apt/sources.list.d/debian.sources
-RUN apt update -y && apt upgrade -y && apt install -y mpd mpc
+COPY ./mpd.conf /etc/mpd.conf.new
+COPY ./asound.conf /etc/asound.conf
+RUN apt update -y && apt upgrade -y && apt install -y mpd mpc vim
 RUN rm -rf /var/lib/apt/lists/*
 RUN cp /etc/mpd.conf /etc/mpd.conf.backup\
   && mv /etc/mpd.conf.new /etc/mpd.conf \

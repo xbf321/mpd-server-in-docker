@@ -18,6 +18,7 @@ mkdir playlists
 docker run -d --name mpd-server \
   -p 7160:6600/tcp \
   --cap-add=sys_nice \
+  -v ./asound.conf:/etc/asound.conf \
   -v ./playlists:/var/lib/mpd/playlist:rw \
   -v ./music:/var/lib/mpd/music:rw \
   --device /dev/snd \
@@ -35,6 +36,8 @@ services:
     environment:
       - TZ=Asia/Hong_Kong
     volumes:
+      - ./asound.conf:/etc/asound.conf
+      - ./mpd.conf:/etc/mpd.conf
       - ./playlists:/var/lib/mpd/playlist:rw
       - ./music:/var/lib/mpd/music:rw
     ports:
@@ -67,4 +70,6 @@ docker-compose up -d
 #CMD ["/usr/bin/mpd", "--no-daemon", "--stdout", "/etc/mpd.conf"]
 docker run -it --rm xbf321/mpd-server /bin/bash
 docker exec -it mpd-server /bin/bash
+docker build --no-cache -t xbf321/mpd-server .
+docker push xbf321/mpd-server:latest
 ```

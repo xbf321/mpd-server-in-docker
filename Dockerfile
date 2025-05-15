@@ -7,7 +7,6 @@ ENV \
 
 COPY ./start.sh .
 COPY ./mpd.conf /etc/mpd.conf.new
-COPY ./mpd.conf /etc/mpd.conf.new
 COPY ./asound.conf /etc/asound.conf
 RUN apt update -y && apt upgrade -y && apt install -y mpd mpc vim
 RUN rm -rf /var/lib/apt/lists/*
